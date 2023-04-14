@@ -159,10 +159,12 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
     // AlertView
     open var alertView = UIView()
     open var alertViewBgColor = UIColor(red:239/255, green:240/255, blue:242/255, alpha:1.0)
-    fileprivate var alertViewWidth: CGFloat = 270.0
+    open var alertViewWidth: CGFloat = 270.0
     fileprivate var alertViewHeightConstraint: NSLayoutConstraint?
-    fileprivate var alertViewPadding: CGFloat = 15.0
-    fileprivate var innerContentWidth: CGFloat = 240.0
+    open var alertViewTopPadding: CGFloat = 24.0
+    open var alertViewBottomPadding: CGFloat = 20.0
+    open var messagePadding: CGFloat = 12.0
+    open var innerContentWidth: CGFloat = 240.0
     fileprivate let actionSheetBounceHeight: CGFloat = 20.0
     
     // TextAreaScrollView
@@ -188,13 +190,15 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
     
     // TextFieldContainerView
     open var textFieldContainerView = UIView()
+    open var textFieldContainerColor = UIColor(red: 203.0/255, green: 203.0/255, blue: 203.0/255, alpha: 1.0)
     open var textFieldBorderColor = UIColor(red: 203.0/255, green: 203.0/255, blue: 203.0/255, alpha: 1.0)
     
     // TextFields
     fileprivate(set) var textFields: [AnyObject]?
-    fileprivate let textFieldHeight: CGFloat = 30.0
+    open var textFieldHeight: CGFloat = 30.0
     open var textFieldBgColor = UIColor.white
-    fileprivate let textFieldCornerRadius: CGFloat = 4.0
+    open var textFieldCornerRadius: CGFloat = 4.0
+    open var textFieldPadding: CGFloat = 12.0
     
     // ButtonAreaScrollView
     fileprivate var buttonAreaScrollView = UIScrollView()
@@ -207,7 +211,7 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
     // ButtonContainer
     fileprivate var buttonContainer = UIView()
     fileprivate var buttonContainerHeightConstraint: NSLayoutConstraint?
-    fileprivate let buttonHeight: CGFloat = 44.0
+    open var buttonHeight: CGFloat = 44.0
     fileprivate var buttonMargin: CGFloat = 10.0
     
     // Actions
@@ -235,7 +239,7 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
         .cancel  : UIColor(red:140/255, green:152/255, blue:153/255, alpha:1),
         .destructive  : UIColor(red:234/255, green:97/255, blue:83/255, alpha:1)
     ]
-    fileprivate var buttonCornerRadius: CGFloat = 4.0
+    open var buttonCornerRadius: CGFloat = 8.0
     
     fileprivate var layoutFlg = false
     fileprivate var keyboardHeight: CGFloat = 0.0
@@ -312,8 +316,9 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
         // variable for ActionSheet
         if (!isAlert()) {
             alertViewWidth =  screenSize.width
-            alertViewPadding = 8.0
-            innerContentWidth = (screenSize.height > screenSize.width) ? screenSize.width - alertViewPadding * 2 : screenSize.height - alertViewPadding * 2
+            alertViewTopPadding = 8.0
+            alertViewBottomPadding = 8.0
+            innerContentWidth = (screenSize.height > screenSize.width) ? screenSize.width - alertViewTopPadding * 2 : screenSize.height - alertViewTopPadding * 2
             buttonMargin = 8.0
             buttonCornerRadius = 6.0
         }
@@ -457,8 +462,8 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
         let hasMessage: Bool = message != nil && message != ""
         let hasTextField: Bool = textFields != nil && textFields!.count > 0
         
-        var textAreaPositionY: CGFloat = alertViewPadding
-        if (!isAlert()) {textAreaPositionY += alertViewPadding}
+        var textAreaPositionY: CGFloat = alertViewTopPadding
+        if (!isAlert()) {textAreaPositionY += alertViewTopPadding}
         
         // TitleLabel
         if (hasTitle) {
@@ -471,7 +476,7 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
             titleLabel.sizeToFit()
             titleLabel.frame = CGRect(x: 0, y: textAreaPositionY, width: innerContentWidth, height: titleLabel.frame.height)
             textContainer.addSubview(titleLabel)
-            textAreaPositionY += titleLabel.frame.height + 5.0
+            textAreaPositionY += titleLabel.frame.height + messagePadding
         }
         
         // MessageView
@@ -485,14 +490,14 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
             messageView.sizeToFit()
             messageView.frame = CGRect(x: 0, y: textAreaPositionY, width: innerContentWidth, height: messageView.frame.height)
             textContainer.addSubview(messageView)
-            textAreaPositionY += messageView.frame.height + 5.0
+            textAreaPositionY += messageView.frame.height + 10.0
         }
         
         // TextFieldContainerView
         if (hasTextField) {
             if (hasTitle || hasMessage) { textAreaPositionY += 5.0 }
             
-            textFieldContainerView.backgroundColor = textFieldBorderColor
+            textFieldContainerView.backgroundColor = textFieldContainerColor
             textFieldContainerView.layer.masksToBounds = true
             textFieldContainerView.layer.cornerRadius = textFieldCornerRadius
             textFieldContainerView.layer.borderWidth = 0.5
@@ -504,7 +509,7 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
             // TextFields
             for (_, obj) in (textFields!).enumerated() {
                 let textField = obj as! UITextField
-                textField.frame = CGRect(x: 0.0, y: textFieldContainerHeight, width: innerContentWidth, height: textField.frame.height)
+                textField.frame = CGRect(x: textFieldPadding, y: textFieldContainerHeight, width: innerContentWidth - textFieldPadding * 2, height: textField.frame.height)
                 textFieldContainerHeight += textField.frame.height + 0.5
             }
             
@@ -575,7 +580,7 @@ open class DOAlertController : UIViewController, UITextFieldDelegate, UIViewCont
             }
             buttonAreaPositionY -= buttonMargin
         }
-        buttonAreaPositionY += alertViewPadding
+        buttonAreaPositionY += alertViewBottomPadding
         
         if (buttons.count == 0) {
             buttonAreaPositionY = 0.0
